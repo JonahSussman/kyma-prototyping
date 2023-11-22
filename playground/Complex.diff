@@ -1,0 +1,60 @@
+1a2,20
+>     // Fields for the real and imaginary parts
+>     private double real;
+>     private double imag;
+> 
+>     // Constructor
+>     public Complex(double real, double imag) {
+>         this.real = real;
+>         this.imag = imag;
+>     }
+> 
+>     // Getter methods
+>     public double getReal() {
+>         return real;
+>     }
+> 
+>     public double getImag() {
+>         return imag;
+>     }
+> 
+3,4c22,23
+<     public static double[] add(double[] a, double[] b) {
+<         return new double[]{a[0] + b[0], a[1] + b[1]};
+---
+>     public static Complex add(Complex a, Complex b) {
+>         return new Complex(a.real + b.real, a.imag + b.imag);
+8,9c27,28
+<     public static double[] sub(double[] a, double[] b) {
+<         return new double[]{a[0] - b[0], a[1] - b[1]};
+---
+>     public static Complex sub(Complex a, Complex b) {
+>         return new Complex(a.real - b.real, a.imag - b.imag);
+13,16c32,35
+<     public static double[] mul(double[] a, double[] b) {
+<         double real = a[0] * b[0] - a[1] * b[1];
+<         double imag = a[0] * b[1] + a[1] * b[0];
+<         return new double[]{real, imag};
+---
+>     public static Complex mul(Complex a, Complex b) {
+>         double real = a.real * b.real - a.imag * b.imag;
+>         double imag = a.real * b.imag + a.imag * b.real;
+>         return new Complex(real, imag);
+20,24c39,49
+<     public static double[] div(double[] a, double[] b) {
+<         double divisor = b[0] * b[0] + b[1] * b[1];
+<         double real = (a[0] * b[0] + a[1] * b[1]) / divisor;
+<         double imag = (a[1] * b[0] - a[0] * b[1]) / divisor;
+<         return new double[]{real, imag};
+---
+>     public static Complex div(Complex a, Complex b) {
+>         double divisor = b.real * b.real + b.imag * b.imag;
+>         double real = (a.real * b.real + a.imag * b.imag) / divisor;
+>         double imag = (a.imag * b.real - a.real * b.imag) / divisor;
+>         return new Complex(real, imag);
+>     }
+> 
+>     // Method to represent the complex number as a string
+>     @Override
+>     public String toString() {
+>         return "(" + real + " + " + imag + "i)";
