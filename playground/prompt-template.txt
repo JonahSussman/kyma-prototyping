@@ -1,0 +1,21 @@
+Task Instructions: Your task is to ...
+
+Earlier Code Changes (Temporal Context): These are edits that have been made in the code-base previously -
+
+Edit 1:
+  Before: «code_before»
+  After: «code_after»
+...
+
+Causes for Change: The change is required due to -
+- «code_to_be_edited» is related to «code_changed_earlier» by «cause»
+
+Related Code (Spatial Context): The following code maybe related:
+«related_code_block-1»
+
+
+Code to be Changed Next: The existing code is given below -
+
+«code_to_be_edited»
+
+Edit the "Code to be Changed Next" and produce "Changed Code" below. Edit the "Code to be Changed Next" according to the "Task Instructions" to make it consistent with the "Earlier Code Changes", "Causes for Change" and "Related Code". If no changes are needed, output "No changes.

@@ -1,0 +1,301 @@
+import os
+
+from dataclasses import dataclass
+from typing import Any, List, Tuple, Union, Dict
+
+from tree_sitter import *
+
+from monitors4codegen.multilspy import LanguageServer
+from monitors4codegen.multilspy.multilspy_types import Location
+
+
+def tree_sitter_build_language(
+  output_path: str,
+  repo_paths,
+  name: str,
+):
+  Language.build_library(output_path, repo_paths)
+  return Language(output_path, name)
+
+@dataclass
+class EditContext:
+  # str type is placeholder
+  temporal_context: str
+  cause_for_change: str
+  spatial_context: str
+  code_to_be_edited: str
+
+@dataclass
+class FileInfo:
+  """All the relevant info one might need for a file"""
+  project_path: str
+  relative_path: str
+  code: str
+  language: Language
+  tree: Tree
+  package_name: str
+
+  # imports: List[str]
+
+  @staticmethod
+  def from_absolute_path(language: Language, project_path: str, relative_path: str):
+    with open(os.path.join(project_path, relative_path), 'r') as f:
+      code = f.read()
+    
+    # NOTE: Not a fan of this, but the idea is to just support java for now
+    parser = Parser()
+    parser.set_language(language)
+    
+    tree = parser.parse(bytes(code, 'utf8'))
+
+    package_query = language.query("(package_declaration) @package_declaration")
+    package_captures = package_query.captures(tree.root_node)
+    # print(package_captures)
+    assert len(package_captures) == 1
+    identifier_node = package_captures[0][0].children[1]
+    package_name = code[identifier_node.start_byte : identifier_node.end_byte]
+
+    return FileInfo(
+      project_path=project_path,
+      relative_path=relative_path,
+      code=code,
+      language=language,
+      tree=tree,
+      package_name=package_name,
+    )
+
+def is_within_range(range_dict, line, character):
+  start_line = range_dict["start"]["line"]
+  start_char = range_dict["start"]["character"]
+  end_line = range_dict["end"]["line"]
+  end_char = range_dict["end"]["character"]
+
+  # Check if the line is within the range
+  if start_line < line < end_line:
+    return True
+  elif line == start_line and line == end_line:
+    # Check if the character is within the range when line is at the boundaries
+    return start_char <= character <= end_char
+  elif line == start_line:
+    # Check if the character is after the start character when line is at the start
+    return character >= start_char
+  elif line == end_line:
+    # Check if the character is before the end character when line is at the end
+    return character <= end_char
+  else:
+    return False
+
+async def get_next_changes_from_imports(
+  context: EditContext, 
+  lsp: LanguageServer, 
+  language: Language, 
+  lsp_gen: Any,  
+  old_file: FileInfo, 
+  new_file: FileInfo
+):
+  return_list = []
+
+  # Import changes
+  import_query = language.query("(import_declaration) @import_declaration")
+
+  old_captures = import_query.captures(old_file.tree.root_node)
+  new_captures = import_query.captures(new_file.tree.root_node)
+
+  old_dict = {}
+  for capture in old_captures:
+    node = capture[0].children[1]
+    old_dict[old_file.code[node.start_byte:node.end_byte]] = capture[0]
+
+  new_dict = {}
+  for capture in new_captures:
+    node = capture[0].children[1]
+    new_dict[old_file.code[node.start_byte:node.end_byte]] = capture[0]
+
+  keys_removed = set(old_dict.keys()) - set(new_dict.keys())
+  keys_added   = set(new_dict.keys()) - set(old_dict.keys())
+
+  imports_removed: List[Node] = [old_dict[key] for key in keys_removed]
+  imports_added:   List[Node] = [new_dict[key] for key in keys_added]
+
+  for imp in imports_removed:
+    # print(f"processing import {imp}")
+    imp_row, imp_col = imp.children[1].end_point
+    # print(f"row {imp_row} col {imp_col}")
+
+    refs = await lsp.request_references(
+      old_file.relative_path,
+      # 3, 40,
+      imp_row,
+      imp_col
+    )
+
+    # print(f"got back {len(refs)} ref(s): {refs}")
+
+    for ref in refs:
+      old_file_uri = f"file://{os.path.join(old_file.project_path, old_file.relative_path)}"
+
+      if not(ref['uri'] == old_file_uri):
+        continue
+      if is_within_range(ref['range'], imp_row, imp_col):
+        continue
+
+      ref['reason'] = 'import_removed'
+
+      return_list.append(ref)
+
+  return return_list
+
+async def get_next_changes_from_fields(
+  context: EditContext, 
+  lsp: LanguageServer, 
+  language: Language, 
+  lsp_gen: Any,  
+  old_file: FileInfo, 
+  new_file: FileInfo
+):
+  return_list = []
+
+  query = language.query("(field_declaration) @field_declaration")
+
+  old_captures = query.captures(old_file.tree.root_node)
+  new_captures = query.captures(new_file.tree.root_node)
+  
+  def build_dict(f: FileInfo, caps: List[Tuple[Node, bool]]):
+    # the_dict: Dict[str, Node] = {}
+    the_dict: Dict[str, str] = {}
+
+    for cap in caps:
+      decl: Union[Node, None] = cap[0].child_by_field_name('declarator')
+      if decl is None:
+        continue
+
+      name: Union[Node, None] = decl.child_by_field_name('name')
+      if name is None:
+        continue
+
+      nowhitespace = "".join(f.code[cap[0].start_byte:cap[0].end_byte].split())
+
+      the_dict[f.code[name.start_byte: name.end_byte]] = (cap[0], nowhitespace)
+      print(nowhitespace)
+      # the_dict[f.code[name.start_byte: name.end_byte]] = nowhitespace
+      # the_dict[nowhitespace] = cap[0]
+
+    return the_dict
+
+  old_dict = build_dict(old_file, old_captures)
+  new_dict = build_dict(new_file, new_captures)
+
+  keys_removed = set(old_dict.keys()) - set(new_dict.keys())
+  keys_added   = set(new_dict.keys()) - set(old_dict.keys())
+  keys_common  = set(old_dict.keys()).intersection(set(new_dict.keys()))
+
+  removed: List[Node] = [old_dict[k][0] for k in keys_removed]
+  added: List[Node]   = [new_dict[k][0] for k in keys_added]
+  changed: List[Node] = [
+    # (old_dict[k][0], new_dict[k][0])
+    old_dict[k][0]
+    for k in keys_common
+    if old_dict[k][1] != new_dict[k][1]
+  ]
+
+  # removed: List[Node] = [old_dict[key][0] for key in keys_removed]
+  # added:   List[Node] = [new_dict[key][0] for key in keys_added]
+  # changed: List[Node] = [
+  #   (old_dict[key], new_dict[key]) 
+  #   for key in keys_common
+  #   if old_dict[key] != new_dict[key]
+  # ]
+
+
+  class_query    = language.query("(class_declaration) @class_declaration")
+  class_captures = class_query.captures(old_file.tree.root_node)
+
+  if len(class_captures) != 1:
+    raise Exception("get_next_changes_from_fields: len(class_captures) != 1") 
+  
+  class_id_node = class_captures[0][0].child_by_field_name('name')
+
+
+  ctor_query    = language.query("(constructor_declaration) @constructor_declaration")
+  ctor_captures = ctor_query.captures(old_file.tree.root_node)
+
+  old_file_uri = f"file://{os.path.join(old_file.project_path, old_file.relative_path)}"
+
+  for rem in removed + changed:
+    row, col = rem.children[1].end_point
+
+    # used_by
+    refs = await lsp.request_references(
+      old_file.relative_path,
+      row,
+      col
+    )
+
+    for ref in refs:
+      if is_within_range(ref['range'], row, col):
+        continue
+
+      ref['reason'] = 'field_removed'
+      ref['relation'] = 'used_by'
+
+      return_list.append(ref)
+
+  # constructed_by
+  
+  
+    
+
+  # print(old_dict)
+  # print(new_dict)
+
+  return return_list
+
+# We need to be able to do all this without changing the file
+# Should be blocks
+async def get_next_changes(
+  context: EditContext, 
+  lsp: LanguageServer, 
+  language: Language, 
+  lsp_gen: Any,  
+  old_file: FileInfo, 
+  new_file: FileInfo
+) -> List[EditContext]:
+  """
+  Get all info for trees
+  catalog all:
+  - import statements
+    - ADD: Do nothing
+    - REM: Get all places where it's used (ImportedBy)
+    - MOD: ????
+  - fields in the class 
+    - ADD: ConstructedBy, BaseClassOf, DerivedClassOf
+    - MOD
+    - REM
+  - class declarations
+    - ADD
+    - MOD
+    - REM
+  - methods and constructors (and their signatures)
+    - ADD
+    - MOD
+    - REM
+  """
+
+  # TODO: Change this, this is really horrible
+  return_list = []
+  return_list.extend(get_next_changes_from_imports(context, lsp, language, lsp_gen, old_file, new_file))
+  return_list.extend(get_next_changes_from_fields(context, lsp, language, lsp_gen, old_file, new_file))
+  
+
+  # Fields in a class
+
+      
+  # Class declarations
+
+  # Methods and constructors (and their signatures)
+
+  return return_list
+
+
+      
+      

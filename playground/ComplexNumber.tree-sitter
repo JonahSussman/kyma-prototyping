@@ -1,0 +1,296 @@
+
+(program 
+    (package_declaration 
+        (scoped_identifier scope: 
+            (scoped_identifier scope: 
+                (identifier) name: 
+                (identifier)) name: 
+            (identifier))) 
+    (import_declaration 
+        (scoped_identifier scope: 
+            (scoped_identifier scope: 
+                (scoped_identifier scope: 
+                    (identifier) name: 
+                    (identifier)) name: 
+                (identifier)) name: 
+            (identifier))) 
+    (block_comment) 
+    (class_declaration 
+        (modifiers) name: 
+        (identifier) body: 
+        (class_body 
+            (line_comment) 
+            (field_declaration 
+                (modifiers) type: 
+                (floating_point_type) declarator: 
+                (variable_declarator name: 
+                    (identifier))) 
+            (field_declaration 
+                (modifiers) type: 
+                (floating_point_type) declarator: 
+                (variable_declarator name: 
+                    (identifier))) 
+            (line_comment) 
+            (constructor_declaration 
+                (modifiers) name: 
+                (identifier) parameters: 
+                (formal_parameters 
+                    (formal_parameter type: 
+                        (floating_point_type) name: 
+                        (identifier)) 
+                    (formal_parameter type: 
+                        (floating_point_type) name: 
+                        (identifier))) body: 
+                (constructor_body 
+                    (expression_statement 
+                        (assignment_expression left: 
+                            (field_access object: 
+                                (this) field: 
+                                (identifier)) right: 
+                            (identifier))) 
+                    (expression_statement 
+                        (assignment_expression left: 
+                            (field_access object: 
+                                (this) field: 
+                                (identifier)) right: 
+                            (identifier))))) 
+            (line_comment) 
+            (method_declaration 
+                (modifiers) type: 
+                (floating_point_type) name: 
+                (identifier) parameters: 
+                (formal_parameters) body: 
+                (block 
+                    (line_comment) 
+                    (return_statement 
+                        (identifier)))) 
+            (method_declaration 
+                (modifiers) type: 
+                (floating_point_type) name: 
+                (identifier) parameters: 
+                (formal_parameters) body: 
+                (block 
+                    (return_statement 
+                        (identifier)))) 
+            (line_comment) 
+            (method_declaration 
+                (modifiers) type: 
+                (type_identifier) name: 
+                (identifier) parameters: 
+                (formal_parameters 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier)) 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier))) body: 
+                (block 
+                    (return_statement 
+                        (object_creation_expression type: 
+                            (type_identifier) arguments: 
+                            (argument_list 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier))) 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)))))))) 
+            (line_comment) 
+            (method_declaration 
+                (modifiers) type: 
+                (type_identifier) name: 
+                (identifier) parameters: 
+                (formal_parameters 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier)) 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier))) body: 
+                (block 
+                    (return_statement 
+                        (object_creation_expression type: 
+                            (type_identifier) arguments: 
+                            (argument_list 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier))) 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)))))))) 
+            (line_comment) 
+            (method_declaration 
+                (modifiers) type: 
+                (type_identifier) name: 
+                (identifier) parameters: 
+                (formal_parameters 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier)) 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier))) body: 
+                (block 
+                    (local_variable_declaration type: 
+                        (floating_point_type) declarator: 
+                        (variable_declarator name: 
+                            (identifier) value: 
+                            (binary_expression left: 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier))) right: 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)))))) 
+                    (local_variable_declaration type: 
+                        (floating_point_type) declarator: 
+                        (variable_declarator name: 
+                            (identifier) value: 
+                            (binary_expression left: 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier))) right: 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)))))) 
+                    (return_statement 
+                        (object_creation_expression type: 
+                            (type_identifier) arguments: 
+                            (argument_list 
+                                (identifier) 
+                                (identifier)))))) 
+            (line_comment) 
+            (method_declaration 
+                (modifiers) type: 
+                (type_identifier) name: 
+                (identifier) parameters: 
+                (formal_parameters 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier)) 
+                    (formal_parameter type: 
+                        (type_identifier) name: 
+                        (identifier))) body: 
+                (block 
+                    (local_variable_declaration type: 
+                        (floating_point_type) declarator: 
+                        (variable_declarator name: 
+                            (identifier) value: 
+                            (binary_expression left: 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier))) right: 
+                                (binary_expression left: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)) right: 
+                                    (field_access object: 
+                                        (identifier) field: 
+                                        (identifier)))))) 
+                    (local_variable_declaration type: 
+                        (floating_point_type) declarator: 
+                        (variable_declarator name: 
+                            (identifier) value: 
+                            (binary_expression left: 
+                                (parenthesized_expression 
+                                    (binary_expression left: 
+                                        (binary_expression left: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier)) right: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier))) right: 
+                                        (binary_expression left: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier)) right: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier))))) right: 
+                                (identifier)))) 
+                    (local_variable_declaration type: 
+                        (floating_point_type) declarator: 
+                        (variable_declarator name: 
+                            (identifier) value: 
+                            (binary_expression left: 
+                                (parenthesized_expression 
+                                    (binary_expression left: 
+                                        (binary_expression left: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier)) right: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier))) right: 
+                                        (binary_expression left: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier)) right: 
+                                            (field_access object: 
+                                                (identifier) field: 
+                                                (identifier))))) right: 
+                                (identifier)))) 
+                    (return_statement 
+                        (object_creation_expression type: 
+                            (type_identifier) arguments: 
+                            (argument_list 
+                                (identifier) 
+                                (identifier)))))) 
+            (line_comment) 
+            (method_declaration 
+                (modifiers 
+                    (marker_annotation name: 
+                        (identifier))) type: 
+                (type_identifier) name: 
+                (identifier) parameters: 
+                (formal_parameters) body: 
+                (block 
+                    (return_statement 
+                        (binary_expression left: 
+                            (binary_expression left: 
+                                (binary_expression left: 
+                                    (binary_expression left: 
+                                        (string_literal) right: 
+                                        (identifier)) right: 
+                                    (string_literal 
+                                        (string_fragment))) right: 
+                                (identifier)) right: 
+                            (string_literal 
+                                (string_fragment)))))))))

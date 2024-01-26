@@ -1,0 +1,1 @@
+Given this code snip, rewrite it. Your solution will overwrite the given code.

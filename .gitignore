@@ -1,3 +1,10 @@
 .venv/
+.venv-3.10/
 .env
 tree-sitter-java/
+playground/build/
+tree-sitter-parser/
+gumtree/
+gumtree-3.0.0/
+gumtree-3.1.0-SNAPSHOT/
+organized/__pycache__

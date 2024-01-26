@@ -1,0 +1,77 @@
+commit 743c39c2b7abb1139bbebd8505fc97be31967093
+Author: JonahSussman <sussmanjonah@gmail.com>
+Date:   Wed Nov 22 00:32:18 2023 -0500
+
+    Updated Complex.java. _ is related to _ by _.
+
+diff --git a/Complex.java b/Complex.java
+index 8e6271b..b11c2d6 100644
+--- a/Complex.java
++++ b/Complex.java
+@@ -1,28 +1,53 @@
+ package git_tests;
+ 
+ public class Complex {
++    // Fields for the real and imaginary parts
++    private double real;
++    private double imag;
++
++    // Constructor
++    public Complex(double real, double imag) {
++        this.real = real;
++        this.imag = imag;
++    }
++
++    // Getter methods
++    public double getReal() {
++        return real;
++    }
++
++    public double getImag() {
++        return imag;
++    }
++
+     // Method to add two complex numbers
+-    public static double[] add(double[] a, double[] b) {
+-        return new double[]{a[0] + b[0], a[1] + b[1]};
++    public static Complex add(Complex a, Complex b) {
++        return new Complex(a.real + b.real, a.imag + b.imag);
+     }
+ 
+     // Method to subtract two complex numbers
+-    public static double[] sub(double[] a, double[] b) {
+-        return new double[]{a[0] - b[0], a[1] - b[1]};
++    public static Complex sub(Complex a, Complex b) {
++        return new Complex(a.real - b.real, a.imag - b.imag);
+     }
+ 
+     // Method to multiply two complex numbers
+-    public static double[] mul(double[] a, double[] b) {
+-        double real = a[0] * b[0] - a[1] * b[1];
+-        double imag = a[0] * b[1] + a[1] * b[0];
+-        return new double[]{real, imag};
++    public static Complex mul(Complex a, Complex b) {
++        double real = a.real * b.real - a.imag * b.imag;
++        double imag = a.real * b.imag + a.imag * b.real;
++        return new Complex(real, imag);
+     }
+ 
+     // Method to divide two complex numbers
+-    public static double[] div(double[] a, double[] b) {
+-        double divisor = b[0] * b[0] + b[1] * b[1];
+-        double real = (a[0] * b[0] + a[1] * b[1]) / divisor;
+-        double imag = (a[1] * b[0] - a[0] * b[1]) / divisor;
+-        return new double[]{real, imag};
++    public static Complex div(Complex a, Complex b) {
++        double divisor = b.real * b.real + b.imag * b.imag;
++        double real = (a.real * b.real + a.imag * b.imag) / divisor;
++        double imag = (a.imag * b.real - a.real * b.imag) / divisor;
++        return new Complex(real, imag);
++    }
++
++    // Method to represent the complex number as a string
++    @Override
++    public String toString() {
++        return "(" + real + " + " + imag + "i)";
+     }
+ }
